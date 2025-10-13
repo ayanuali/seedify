@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useSigner } from '@thirdweb-dev/react';
 import axios from 'axios';
+import { checkUSDCBalance, mintTestUSDC, approveUSDC, createJobOnChain } from '../contracts/contract';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function CreateJob({ address }) {
+  const signer = useSigner();
   const [form, setForm] = useState({
     freelancer: '',
     amount: '',
@@ -14,6 +17,7 @@ function CreateJob({ address }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [status, setStatus] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -22,8 +26,13 @@ function CreateJob({ address }) {
     setSuccess('');
 
     try {
-      // create job in database
-      const res = await axios.post(`${API_URL}/api/jobs/create`, {
+      if (!signer) {
+        throw new Error('Please connect your wallet');
+      }
+
+      // step 1: create job in database first
+      setStatus('Creating job in database...');
+      const dbRes = await axios.post(`${API_URL}/api/jobs/create`, {
         clientAddress: address,
         freelancerAddress: form.freelancer,
         amount: form.amount,
@@ -32,15 +41,44 @@ function CreateJob({ address }) {
         category: form.category
       });
 
-      setSuccess('Job created! In production, you would now create it on-chain.');
-      setForm({ freelancer: '', amount: '', title: '', description: '', category: 'code' });
+      const jobId = dbRes.data.jobId;
 
-      // in production, next step would be to call smart contract
-      console.log('Job created with ID:', res.data.jobId);
+      // step 2: check usdc balance, mint if needed (for local testing)
+      setStatus('Checking USDC balance...');
+      const balance = await checkUSDCBalance(signer);
+      if (parseFloat(balance) < parseFloat(form.amount)) {
+        setStatus('Minting test USDC...');
+        await mintTestUSDC(signer, 1000); // mint 1000 test usdc
+      }
+
+      // step 3: approve usdc spending
+      setStatus('Approving USDC...');
+      await approveUSDC(signer, form.amount);
+
+      // step 4: create job on blockchain
+      setStatus('Creating job on blockchain...');
+      const { chainJobId, txHash } = await createJobOnChain(
+        signer,
+        form.freelancer,
+        form.amount
+      );
+
+      // step 5: link database job to blockchain job
+      setStatus('Linking to database...');
+      await axios.post(`${API_URL}/api/jobs/link-chain`, {
+        jobId,
+        chainJobId,
+        txHash
+      });
+
+      setSuccess(`Job created successfully! Tx: ${txHash.substring(0, 10)}...`);
+      setStatus('');
+      setForm({ freelancer: '', amount: '', title: '', description: '', category: 'code' });
 
     } catch (err) {
       console.error('failed:', err);
-      setError(err.response?.data?.error || 'Job creation failed');
+      setError(err.message || err.response?.data?.error || 'Job creation failed');
+      setStatus('');
     } finally {
       setLoading(false);
     }
@@ -59,6 +97,12 @@ function CreateJob({ address }) {
       {success && (
         <div style={{ padding: '1rem', background: '#d1fae5', color: '#065f46', borderRadius: '0.375rem', marginBottom: '1rem' }}>
           {success}
+        </div>
+      )}
+
+      {status && (
+        <div style={{ padding: '1rem', background: '#dbeafe', color: '#1e40af', borderRadius: '0.375rem', marginBottom: '1rem' }}>
+          {status}
         </div>
       )}
 
@@ -128,11 +172,11 @@ function CreateJob({ address }) {
           className="btn-primary"
           style={{ width: '100%' }}
         >
-          {loading ? 'Creating...' : 'Create Job'}
+          {loading ? status || 'Creating...' : 'Create Job & Lock Funds'}
         </button>
 
         <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
-          2% platform fee will be deducted when job completes
+          2% platform fee will be deducted when job completes. Test USDC will be minted automatically if needed.
         </p>
       </form>
     </div>
