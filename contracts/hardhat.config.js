@@ -14,10 +14,10 @@ module.exports = {
     hardhat: {
       chainId: 31337
     },
-    polygonMumbai: {
-      url: process.env.MUMBAI_RPC || "https://rpc-mumbai.maticvigil.com",
+    polygonAmoy: {
+      url: process.env.AMOY_RPC || "https://rpc-amoy.polygon.technology",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: 80001
+      chainId: 80002
     }
   },
   paths: {
