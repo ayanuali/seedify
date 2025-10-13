@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import FreelanceEscrowABI from './FreelanceEscrow.json';
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
-const USDC_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // MockUSDC on local network
+const USDC_ADDRESS = '0x98525dD5Fd0f11767eAF55a50CD10A3BD66e982E'; // MockUSDC on Polygon Amoy
 
 // simple erc20 abi for approve
 const ERC20_ABI = [
