@@ -14,10 +14,10 @@ module.exports = {
     hardhat: {
       chainId: 31337
     },
-    baseSepolia: {
-      url: process.env.BASE_SEPOLIA_RPC || "",
+    polygonMumbai: {
+      url: process.env.MUMBAI_RPC || "https://rpc-mumbai.maticvigil.com",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
-      chainId: 84532
+      chainId: 80001
     }
   },
   paths: {
