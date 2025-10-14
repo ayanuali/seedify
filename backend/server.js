@@ -6,7 +6,10 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://seedify-kohl.vercel.app'],
+  credentials: true
+}));
 app.use(express.json());
 
 const supabase = createClient(
@@ -306,12 +309,16 @@ app.get('/api/jobs/user/:address', async (req, res) => {
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('supabase error:', error);
+      throw error;
+    }
 
-    res.json(data);
+    // return empty array if no data
+    res.json(data || []);
   } catch (err) {
-    console.error('failed to fetch jobs:', err);
-    res.status(500).json({ error: 'failed to fetch jobs' });
+    console.error('failed to fetch jobs:', err.message, err);
+    res.status(500).json({ error: 'failed to fetch jobs', details: err.message });
   }
 });
 
