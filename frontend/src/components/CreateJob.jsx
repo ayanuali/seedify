@@ -33,8 +33,10 @@ function CreateJob({ address }) {
       // check network
       setStatus('Checking network...');
       const network = await signer.provider.getNetwork();
-      if (network.chainId !== 80002) {
-        throw new Error('Please switch to Polygon Amoy Testnet (Chain ID: 80002)');
+      const chainId = parseInt(network.chainId.toString());
+      console.log('Current chain ID:', chainId);
+      if (chainId !== 80002) {
+        throw new Error(`Wrong network! Please switch to Polygon Amoy Testnet (Chain ID: 80002). You are on: ${chainId}`);
       }
 
       // step 1: create job in database first
