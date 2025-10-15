@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import JobDetails from './JobDetails';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -7,6 +8,7 @@ function JobsList({ address }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [selectedJobId, setSelectedJobId] = useState(null);
 
   useEffect(() => {
     loadJobs();
@@ -99,7 +101,7 @@ function JobsList({ address }) {
       ) : (
         <div>
           {jobs.map(job => (
-            <div key={job.id} className="job-card">
+            <div key={job.id} className="job-card" onClick={() => setSelectedJobId(job.id)}>
               <div className="job-header">
                 <div className="job-info">
                   <h3>{job.title}</h3>
@@ -155,6 +157,17 @@ function JobsList({ address }) {
             </div>
           ))}
         </div>
+      )}
+
+      {selectedJobId && (
+        <JobDetails
+          jobId={selectedJobId}
+          address={address}
+          onClose={() => {
+            setSelectedJobId(null);
+            loadJobs(); // Reload jobs when modal closes
+          }}
+        />
       )}
     </div>
   );
