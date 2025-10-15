@@ -40,7 +40,10 @@ app.post('/api/jobs/create', async (req, res) => {
     amount,
     title,
     description,
-    category
+    category,
+    chainJobId,
+    txHash,
+    status
   } = req.body;
 
   // basic validation
@@ -57,7 +60,7 @@ app.post('/api/jobs/create', async (req, res) => {
   }
 
   try {
-    // save to database first
+    // save to database
     const { data, error } = await supabase
       .from('jobs')
       .insert({
@@ -67,7 +70,9 @@ app.post('/api/jobs/create', async (req, res) => {
         title,
         description,
         category: category || 'other',
-        status: 'pending_blockchain',
+        chain_job_id: chainJobId || null,
+        tx_hash: txHash || null,
+        status: status || 'pending_blockchain',
         created_at: new Date()
       })
       .select()
@@ -78,7 +83,7 @@ app.post('/api/jobs/create', async (req, res) => {
     res.json({
       jobId: data.id,
       status: 'created',
-      message: 'now create the job on blockchain'
+      message: 'job created successfully'
     });
 
   } catch (err) {
@@ -319,6 +324,49 @@ app.get('/api/jobs/user/:address', async (req, res) => {
   } catch (err) {
     console.error('failed to fetch jobs:', err.message, err);
     res.status(500).json({ error: 'failed to fetch jobs', details: err.message });
+  }
+});
+
+// delete a job (only if pending_blockchain)
+app.delete('/api/jobs/:id', async (req, res) => {
+  const { id } = req.params;
+  const { clientAddress } = req.query;
+
+  if (!clientAddress || !ethers.isAddress(clientAddress)) {
+    return res.status(400).json({ error: 'invalid client address' });
+  }
+
+  try {
+    // only allow deletion of pending jobs by the client
+    const { data: job } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (!job) {
+      return res.status(404).json({ error: 'job not found' });
+    }
+
+    if (job.client_address !== clientAddress.toLowerCase()) {
+      return res.status(403).json({ error: 'not authorized' });
+    }
+
+    if (job.status !== 'pending_blockchain') {
+      return res.status(400).json({ error: 'can only delete pending jobs' });
+    }
+
+    const { error } = await supabase
+      .from('jobs')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('failed to delete job:', err);
+    res.status(500).json({ error: 'failed to delete job' });
   }
 });
 

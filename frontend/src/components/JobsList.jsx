@@ -28,6 +28,18 @@ function JobsList({ address }) {
     }
   }
 
+  async function handleDelete(jobId) {
+    if (!confirm('Delete this failed job?')) return;
+
+    try {
+      await axios.delete(`${API_URL}/api/jobs/${jobId}?clientAddress=${address}`);
+      loadJobs(); // Reload list
+    } catch (err) {
+      console.error('failed to delete:', err);
+      alert('Failed to delete job');
+    }
+  }
+
   function getStatusClass(status) {
     switch (status) {
       case 'active':
@@ -117,6 +129,16 @@ function JobsList({ address }) {
                 <span className={`status-badge ${getStatusClass(job.status)}`}>
                   {formatStatus(job.status)}
                 </span>
+
+                {job.status === 'pending_blockchain' && job.client_address.toLowerCase() === address.toLowerCase() && (
+                  <button
+                    className="btn-danger"
+                    style={{ fontSize: '0.875rem', background: '#dc2626' }}
+                    onClick={() => handleDelete(job.id)}
+                  >
+                    Delete (Failed)
+                  </button>
+                )}
 
                 {job.status === 'active' && job.freelancer_address.toLowerCase() === address.toLowerCase() && (
                   <button className="btn-primary" style={{ fontSize: '0.875rem' }}>

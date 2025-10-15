@@ -39,20 +39,7 @@ function CreateJob({ address }) {
         throw new Error(`Wrong network! Please switch to Polygon Amoy Testnet (Chain ID: 80002). You are on: ${chainId}`);
       }
 
-      // step 1: create job in database first
-      setStatus('Creating job in database...');
-      const dbRes = await axios.post(`${API_URL}/api/jobs/create`, {
-        clientAddress: address,
-        freelancerAddress: form.freelancer,
-        amount: form.amount,
-        title: form.title,
-        description: form.description,
-        category: form.category
-      });
-
-      const jobId = dbRes.data.jobId;
-
-      // step 2: check usdc balance, mint if needed (for local testing)
+      // step 1: check usdc balance, mint if needed (for local testing)
       setStatus('Checking USDC balance...');
       const balance = await checkUSDCBalance(signer);
       if (parseFloat(balance) < parseFloat(form.amount)) {
@@ -60,11 +47,11 @@ function CreateJob({ address }) {
         await mintTestUSDC(signer, 1000); // mint 1000 test usdc
       }
 
-      // step 3: approve usdc spending
+      // step 2: approve usdc spending
       setStatus('Approving USDC...');
       await approveUSDC(signer, form.amount);
 
-      // step 4: create job on blockchain
+      // step 3: create job on blockchain
       setStatus('Creating job on blockchain...');
       const { chainJobId, txHash } = await createJobOnChain(
         signer,
@@ -72,12 +59,18 @@ function CreateJob({ address }) {
         form.amount
       );
 
-      // step 5: link database job to blockchain job
-      setStatus('Linking to database...');
-      await axios.post(`${API_URL}/api/jobs/link-chain`, {
-        jobId,
-        chainJobId,
-        txHash
+      // step 4: save to database AFTER blockchain success
+      setStatus('Saving to database...');
+      await axios.post(`${API_URL}/api/jobs/create`, {
+        clientAddress: address,
+        freelancerAddress: form.freelancer,
+        amount: form.amount,
+        title: form.title,
+        description: form.description,
+        category: form.category,
+        chainJobId: chainJobId,
+        txHash: txHash,
+        status: 'active'
       });
 
       setSuccess(`Job created successfully! Tx: ${txHash.substring(0, 10)}...`);
