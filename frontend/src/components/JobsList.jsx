@@ -16,10 +16,13 @@ function JobsList({ address }) {
     try {
       setLoading(true);
       const role = filter === 'all' ? '' : filter;
-      const res = await axios.get(`${API_URL}/api/jobs/user/${address}?role=${role}`);
-      setJobs(res.data);
+      const res = await axios.get(`${API_URL}/api/jobs/user/${address}?role=${role}`, {
+        timeout: 10000 // 10 second timeout
+      });
+      setJobs(res.data || []);
     } catch (err) {
       console.error('failed to load jobs:', err);
+      setJobs([]); // Set empty array on error so loading stops
     } finally {
       setLoading(false);
     }

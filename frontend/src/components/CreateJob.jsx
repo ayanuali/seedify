@@ -30,6 +30,13 @@ function CreateJob({ address }) {
         throw new Error('Please connect your wallet');
       }
 
+      // check network
+      setStatus('Checking network...');
+      const network = await signer.provider.getNetwork();
+      if (network.chainId !== 80002) {
+        throw new Error('Please switch to Polygon Amoy Testnet (Chain ID: 80002)');
+      }
+
       // step 1: create job in database first
       setStatus('Creating job in database...');
       const dbRes = await axios.post(`${API_URL}/api/jobs/create`, {
