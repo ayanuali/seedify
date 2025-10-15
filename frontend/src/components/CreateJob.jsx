@@ -178,7 +178,7 @@ function CreateJob({ address }) {
         </button>
 
         <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
-          2% platform fee will be deducted when job completes. Test USDC will be minted automatically if needed.
+          2% fee when the job's done. Don't worry about test USDC - we'll mint it for you automatically.
         </p>
       </form>
     </div>

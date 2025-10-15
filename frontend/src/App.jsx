@@ -44,7 +44,7 @@ function App() {
       ) : (
         <div className="connect-prompt">
           <h2>Connect Your Wallet</h2>
-          <p>Connect your wallet to create jobs and get paid instantly</p>
+          <p>Connect to start creating jobs or getting paid for your work</p>
         </div>
       )}
     </div>

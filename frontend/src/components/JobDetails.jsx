@@ -296,8 +296,8 @@ function JobDetails({ jobId, address, onClose }) {
             </div>
             <p style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.5rem', textAlign: 'center' }}>
               {job.ai_approved
-                ? '✓ AI has approved this work. Review and release payment.'
-                : '✗ AI flagged issues. Review carefully before approving.'}
+                ? '✓ AI says it looks good. Check it yourself and release payment if you agree.'
+                : '✗ AI found some issues. Take a look before deciding.'}
             </p>
           </div>
         )}
