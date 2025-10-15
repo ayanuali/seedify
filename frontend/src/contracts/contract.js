@@ -22,7 +22,7 @@ export async function getUSDCContract(signer) {
 
 export async function approveUSDC(signer, amount) {
   const usdc = await getUSDCContract(signer);
-  const amountInWei = ethers.parseUnits(amount.toString(), 6); // usdc has 6 decimals
+  const amountInWei = ethers.utils.parseUnits(amount.toString(), 6); // usdc has 6 decimals
 
   const tx = await usdc.approve(CONTRACT_ADDRESS, amountInWei);
   await tx.wait();
@@ -31,7 +31,7 @@ export async function approveUSDC(signer, amount) {
 
 export async function createJobOnChain(signer, freelancerAddress, amount) {
   const contract = await getContract(signer);
-  const amountInWei = ethers.parseUnits(amount.toString(), 6);
+  const amountInWei = ethers.utils.parseUnits(amount.toString(), 6);
 
   const tx = await contract.createJob(freelancerAddress, amountInWei);
   const receipt = await tx.wait();
@@ -59,7 +59,7 @@ export async function createJobOnChain(signer, freelancerAddress, amount) {
 
 export async function mintTestUSDC(signer, amount) {
   const usdc = await getUSDCContract(signer);
-  const amountInWei = ethers.parseUnits(amount.toString(), 6);
+  const amountInWei = ethers.utils.parseUnits(amount.toString(), 6);
 
   const tx = await usdc.mint(await signer.getAddress(), amountInWei);
   await tx.wait();
@@ -69,5 +69,5 @@ export async function mintTestUSDC(signer, amount) {
 export async function checkUSDCBalance(signer) {
   const usdc = await getUSDCContract(signer);
   const balance = await usdc.balanceOf(await signer.getAddress());
-  return ethers.formatUnits(balance, 6);
+  return ethers.utils.formatUnits(balance, 6);
 }
