@@ -1,254 +1,241 @@
-# FreelancePay - AI-Powered Freelance Payment Router
+# FreelancePay - AI-Powered Blockchain Escrow
 
-AI verification + blockchain escrow for instant, secure freelance payments.
+![FreelancePay](https://img.shields.io/badge/blockchain-Polygon-8247E5) ![AI](https://img.shields.io/badge/AI-GPT--4o--mini-00A67E) ![Status](https://img.shields.io/badge/status-live-success)
 
-## What We Built
+**Live Demo:** [https://seedify-kohl.vercel.app](https://seedify-kohl.vercel.app)
 
-A complete freelance payment platform with:
-- Smart contracts for USDC escrow on Base network
-- Express backend with OpenAI code/content verification
-- React frontend with Thirdweb wallet integration
-- Supabase database for job tracking
-- 2% platform fee vs 10-20% on traditional platforms
+## Overview
+
+FreelancePay combines AI-powered quality verification with blockchain escrow to create a trustless freelance payment platform. Built for the Seedify Vibe Coins competition.
+
+## Problem
+
+Traditional freelance platforms suffer from:
+- Payment disputes between clients and freelancers
+- Delayed payment releases
+- Lack of objective work quality assessment
+- High platform fees (15-20%)
+
+## Solution
+
+FreelancePay provides:
+- **AI Verification:** GPT-4o-mini automatically reviews code quality and content originality
+- **Blockchain Escrow:** Smart contracts hold payments securely until work is approved
+- **Low Fees:** Only 2% platform fee
+- **Instant Settlements:** No waiting for manual review processes
+
+## Tech Stack
+
+### Smart Contracts
+- Solidity 0.8.28
+- Hardhat development framework
+- OpenZeppelin security libraries
+- Deployed on Polygon Amoy Testnet
+
+### Backend
+- Node.js + Express
+- OpenAI GPT-4o-mini API
+- Supabase PostgreSQL database
+- Deployed on Render
+
+### Frontend
+- React 18 + Vite
+- Thirdweb wallet integration
+- Ethers.js v5
+- Deployed on Vercel
+
+## Features
+
+✅ Web3 wallet connection (MetaMask, TrustWallet, etc.)
+✅ Create jobs with USDC escrow
+✅ Automatic test USDC minting (for demo)
+✅ AI-powered code review
+✅ AI-powered content analysis
+✅ On-chain payment release
+✅ Dispute resolution system
+✅ Role-based job views (Client/Freelancer)
+
+## Smart Contracts
+
+**Polygon Amoy Testnet:**
+- Escrow Contract: `0x03d47CbF9a57951Cbd72e5236A70A94C1A038Cb1`
+- MockUSDC Token: `0x98525dD5Fd0f11767eAF55a50CD10A3BD66e982E`
+
+[View on PolygonScan](https://amoy.polygonscan.com/address/0x03d47CbF9a57951Cbd72e5236A70A94C1A038Cb1)
+
+## How It Works
+
+1. **Client creates job** → USDC locked in smart contract escrow
+2. **Freelancer submits work** → Provides URL to deliverable
+3. **AI verifies quality** → GPT-4o-mini reviews code/content
+4. **Client releases payment** → Freelancer receives funds (minus 2% fee)
+
+## Live Deployment
+
+- **Frontend:** https://seedify-kohl.vercel.app
+- **Backend API:** https://freelancepay-api.onrender.com
+- **Blockchain:** Polygon Amoy Testnet (Chain ID: 80002)
+
+## Installation
+
+### Prerequisites
+- Node.js 18+
+- MetaMask or compatible Web3 wallet
+- Polygon Amoy testnet POL (from faucet)
+
+### Clone & Install
+```bash
+git clone https://github.com/ayanuali/seedify.git
+cd seedify
+
+# Install contracts
+cd contracts
+npm install
+
+# Install backend
+cd ../backend
+npm install
+
+# Install frontend
+cd ../frontend
+npm install
+```
+
+### Environment Setup
+
+Create `.env` files in each directory:
+
+**contracts/.env:**
+```
+AMOY_RPC=https://rpc-amoy.polygon.technology
+DEPLOYER_PRIVATE_KEY=your_private_key
+```
+
+**backend/.env:**
+```
+OPENAI_API_KEY=your_openai_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_key
+AMOY_RPC=https://rpc-amoy.polygon.technology
+CONTRACT_ADDRESS=0x03d47CbF9a57951Cbd72e5236A70A94C1A038Cb1
+PORT=3000
+PLATFORM_FEE_PERCENT=2
+```
+
+**frontend/.env:**
+```
+VITE_THIRDWEB_CLIENT_ID=your_thirdweb_id
+VITE_API_URL=http://localhost:3000
+VITE_CONTRACT_ADDRESS=0x03d47CbF9a57951Cbd72e5236A70A94C1A038Cb1
+VITE_CHAIN_ID=80002
+```
+
+### Run Locally
+
+```bash
+# Terminal 1: Backend
+cd backend
+node server.js
+
+# Terminal 2: Frontend
+cd frontend
+npm run dev
+```
+
+Visit `http://localhost:5173`
+
+## Testing
+
+1. Connect wallet to Polygon Amoy Testnet
+2. Get POL from faucet: https://faucet.polygon.technology
+3. Create a job (test USDC will be minted automatically)
+4. Submit work as freelancer
+5. AI verification runs automatically
+6. Approve payment as client
+
+## Architecture
+
+```
+┌─────────────┐      ┌──────────────┐      ┌─────────────┐
+│   Frontend  │─────▶│   Backend    │─────▶│   OpenAI    │
+│   (React)   │      │   (Express)  │      │  GPT-4o-mini│
+└─────┬───────┘      └──────┬───────┘      └─────────────┘
+      │                     │
+      │                     ▼
+      │              ┌──────────────┐
+      │              │   Supabase   │
+      │              │  PostgreSQL  │
+      │              └──────────────┘
+      ▼
+┌─────────────┐
+│  Polygon    │
+│  Amoy Net   │
+│  (Escrow)   │
+└─────────────┘
+```
+
+## Security
+
+- ReentrancyGuard on all fund transfers
+- Address validation on all inputs
+- Environment variables for secrets
+- Client-side network verification
+- CORS protection on backend
+
+## Revenue Model
+
+- 2% platform fee on completed jobs
+- Deducted automatically from escrow releases
+- Example: $100 job → Freelancer gets $98, Platform gets $2
 
 ## Project Structure
 
 ```
 seedify/
-├── contracts/          # Solidity smart contracts (FreelanceEscrow, MockUSDC)
-│   ├── contracts/      # Contract source files
-│   ├── hardhat.config.js
-│   └── .env           # Blockchain config (gitignored)
+├── contracts/          # Solidity smart contracts
+│   ├── contracts/
+│   │   ├── FreelanceEscrow.sol
+│   │   └── MockUSDC.sol
+│   ├── scripts/
+│   │   └── deploy-amoy.js
+│   └── hardhat.config.js
 ├── backend/           # Express API server
-│   ├── server.js      # Main API with AI verification
-│   ├── schema.sql     # Database schema
-│   └── .env          # API keys (gitignored)
-├── frontend/          # React + Vite app
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── components/
-│   │   │   ├── CreateJob.jsx
-│   │   │   └── JobsList.jsx
-│   └── .env          # Frontend config (gitignored)
-└── README.md
+│   ├── server.js
+│   └── schema.sql
+└── frontend/          # React app
+    ├── src/
+    │   ├── components/
+    │   │   ├── CreateJob.jsx
+    │   │   └── JobsList.jsx
+    │   ├── contracts/
+    │   │   └── contract.js
+    │   └── App.jsx
+    └── vite.config.js
 ```
 
-## Build Status
+## Future Enhancements
 
-### ✅ Completed
-- [x] Smart contracts written and compiled
-- [x] Backend API with AI verification
-- [x] React frontend with wallet connection
-- [x] Supabase database schema
-- [x] Git repository with proper .gitignore
-- [x] All environment files configured
+- Multi-token support (USDC, DAI, USDT)
+- Milestone-based payments
+- Reputation system
+- Dispute arbitration DAO
+- Mobile app (React Native)
+- Mainnet deployment
 
-### ⏳ Still Need (Before Deployment)
+## Team
 
-1. **Alchemy Base Sepolia App**
-   - Go to https://dashboard.alchemy.com
-   - Create new app → Select "Base Sepolia" network
-   - Copy API key and RPC URL
-   - Update in `contracts/.env` and `backend/.env`:
-     ```
-     ALCHEMY_API_KEY=your-key-here
-     BASE_SEPOLIA_RPC=https://base-sepolia.g.alchemy.com/v2/your-key
-     ```
+Built by [@ayanuali](https://github.com/ayanuali) for Seedify Vibe Coins Competition
 
-2. **Wallet Private Key** (for contract deployment)
-   - **Trust Wallet:**
-     - Settings → Wallets → [Your Wallet] → ... → Show Private Key
-   - **MetaMask:**
-     - Click three dots → Account Details → Export Private Key
-   - Add to `contracts/.env` and `backend/.env`:
-     ```
-     DEPLOYER_PRIVATE_KEY=0x...
-     ```
+## License
 
-3. **Testnet ETH** (for gas fees)
-   - Visit https://www.alchemy.com/faucets/base-sepolia
-   - Enter your wallet address
-   - Request testnet ETH (free)
+MIT
 
-4. **Set Up Supabase Database**
-   - Go to https://supabase.com/dashboard
-   - Open your project SQL Editor
-   - Copy contents from `backend/schema.sql`
-   - Run the SQL to create tables
-   - See `backend/SUPABASE_SETUP.md` for detailed instructions
+## Links
 
-## API Keys Status
+- **Live App:** https://seedify-kohl.vercel.app
+- **Backend API:** https://freelancepay-api.onrender.com
+- **Contract Explorer:** https://amoy.polygonscan.com/address/0x03d47CbF9a57951Cbd72e5236A70A94C1A038Cb1
 
-- ✅ OpenAI (AI verification) - configured
-- ✅ Thirdweb (wallet connection) - configured
-- ✅ Supabase (database) - configured
-- ✅ Pinata (IPFS storage) - configured
-- ⏳ Alchemy Base Sepolia - **need to create**
-- ⏳ Wallet private key - **need to export**
+---
 
-## Quick Start (After Getting Missing Keys)
-
-### 1. Set Up Supabase
-```bash
-# Go to backend/SUPABASE_SETUP.md and follow instructions
-# Takes 2 minutes
-```
-
-### 2. Deploy Smart Contracts
-```bash
-cd contracts
-# make sure .env has DEPLOYER_PRIVATE_KEY and BASE_SEPOLIA_RPC
-npx hardhat run scripts/deploy.js --network baseSepolia
-# copy deployed contract address to backend/.env and frontend/.env
-```
-
-### 3. Start Backend
-```bash
-cd backend
-npm start
-# runs on http://localhost:3000
-```
-
-### 4. Start Frontend
-```bash
-cd frontend
-npm run dev
-# opens http://localhost:5173
-```
-
-## Testing the App
-
-1. **Connect Wallet**
-   - Open http://localhost:5173
-   - Click "Connect Wallet"
-   - Select MetaMask or Trust Wallet
-   - Approve connection
-
-2. **Create a Job** (as client)
-   - Click "Create Job" tab
-   - Fill in job details
-   - Enter freelancer wallet address
-   - Set amount in USDC
-   - Submit (creates in database)
-   - In production, next step would call smart contract
-
-3. **View Jobs**
-   - Click "My Jobs" tab
-   - Toggle between "As Client" and "As Freelancer"
-   - See all your jobs with status
-
-4. **Submit Work** (as freelancer)
-   - See jobs assigned to you
-   - Click "Submit Work"
-   - Upload deliverable
-   - AI automatically verifies
-   - Payment releases if approved
-
-## Environment Variables
-
-All secrets are in `.env` files (gitignored). Here's what you have:
-
-### contracts/.env
-```
-BASE_SEPOLIA_RPC=       # NEED: from Alchemy
-DEPLOYER_PRIVATE_KEY=   # NEED: from your wallet
-```
-
-### backend/.env
-```
-OPENAI_API_KEY=         # ✅ CONFIGURED
-BASE_SEPOLIA_RPC=       # NEED: from Alchemy
-SUPABASE_URL=          # ✅ CONFIGURED
-SUPABASE_ANON_KEY=     # ✅ CONFIGURED
-PINATA_API_KEY=        # ✅ CONFIGURED
-PINATA_SECRET=         # ✅ CONFIGURED
-CONTRACT_ADDRESS=       # Will be set after deployment
-DEPLOYER_PRIVATE_KEY=   # NEED: from your wallet
-PORT=3000
-PLATFORM_FEE_PERCENT=2
-```
-
-### frontend/.env
-```
-VITE_THIRDWEB_CLIENT_ID=  # ✅ CONFIGURED
-VITE_API_URL=http://localhost:3000
-VITE_CONTRACT_ADDRESS=    # Will be set after deployment
-VITE_CHAIN_ID=84532      # Base Sepolia
-```
-
-## What Works Right Now
-
-- ✅ Backend API accepts job creation requests
-- ✅ OpenAI verifies code and content quality
-- ✅ Frontend creates jobs and displays them
-- ✅ Wallet connection via Thirdweb
-- ✅ Smart contracts compiled successfully
-- ⏳ Contract deployment (waiting for Alchemy + private key)
-- ⏳ On-chain transactions (waiting for deployment)
-
-## Next Steps
-
-1. **Get missing API keys** (Alchemy Base Sepolia + wallet private key)
-2. **Deploy contracts** to Base Sepolia testnet
-3. **Update contract address** in backend and frontend .env
-4. **Test full flow** from job creation to payment
-5. **Add blockchain integration** to frontend (contract calls)
-6. **Deploy to production** (Vercel for frontend, Render for backend)
-
-## Security Notes
-
-- All `.env` files are gitignored
-- Private keys never committed to git
-- Database credentials protected
-- Contract uses ReentrancyGuard for safety
-- Platform fee limited to max 10%
-
-## Tech Stack
-
-- **Blockchain:** Solidity 0.8.20, Hardhat, Base Sepolia
-- **Backend:** Node.js, Express, OpenAI GPT-4o-mini
-- **Frontend:** React 19, Vite, Thirdweb SDK
-- **Database:** Supabase (PostgreSQL)
-- **Storage:** Pinata (IPFS)
-
-## Commands Reference
-
-```bash
-# Contracts
-cd contracts
-npx hardhat compile           # compile contracts
-npx hardhat test             # run tests (when written)
-npx hardhat run scripts/deploy.js --network baseSepolia
-
-# Backend
-cd backend
-npm start                    # start API server
-npm run dev                  # same as start
-
-# Frontend
-cd frontend
-npm run dev                  # development server
-npm run build               # production build
-npm run preview             # preview production build
-```
-
-## Support
-
-If you hit issues:
-1. Check all .env files have correct values
-2. Make sure you have testnet ETH
-3. Verify Supabase tables are created
-4. Check backend is running on port 3000
-5. Check browser console for errors
-
-## What To Do Next
-
-**Immediate next steps:**
-1. Create Alchemy Base Sepolia app
-2. Export private key from Trust Wallet
-3. Get testnet ETH
-4. Run Supabase SQL schema
-5. Deploy contracts
-6. Test the full flow
-
-Once deployed, you'll have a working freelance payment platform with AI verification!
+**Built with ❤️ on Polygon**
